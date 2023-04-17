@@ -2,6 +2,7 @@ import sqlite3
 
 from flask import Flask, render_template, request
 
+
 app = Flask(__name__)
 
 DB_PATH = 'users-database.db'
