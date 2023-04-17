@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Вход</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Вход в систему</title>
+    <link rel="stylesheet" href="styles4login.css">
 </head>
 <body>
-<h1>Вход</h1>
-<form method="post" action="{{ url_for('auth') }}">
-    <div class="form-group">
-        <label for="username">Имя пользователя</label>
-        <input type="text" name="username" id="username" placeholder="Введите имя пользователя">
-    </div>
-    <div class="form-group">
-        <label for="password">Пароль</label>
-        <input type="password" name="password" id="password" placeholder="Введите пароль">
-    </div>
-    <button type="submit">Войти</button>
-</form>
+<header>
+    <h1>Вход в систему HEALTH TRACKER</h1>
+</header>
+<main>
+    <form class="login-form" method="POST" action="/login">
+        <div class="input-group">
+            <label for="email">Адрес электронной почты:</label>
+            <input type="text" id="email" name="email">
+        </div>
+        <div class="input-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <button type="submit">Войти</button>
+    </form>
+</main>
 </body>
 </html>
