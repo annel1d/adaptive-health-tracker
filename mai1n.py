@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 
 from forms.news import HealthForm
 from forms.user import RegisterForm, LoginForm
-from data.news import Health
+from data.news import News
 from data.users import User
 from data import db_session
 
@@ -37,7 +37,7 @@ def add_news():
     form = HealthForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        news = Health()
+        news = News()
         news.title = form.title.data
         news.content = form.content.data
         news.is_private = form.is_private.data
@@ -52,7 +52,7 @@ def add_news():
 @login_required
 def news_delete(id):
     db_sess = db_session.create_session()
-    news = db_sess.query(Health).filter(Health.id == id, Health.user == current_user).first()
+    news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
     if news:
         db_sess.delete(news)
         db_sess.commit()
@@ -67,7 +67,7 @@ def edit_news(id):
     form = HealthForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
-        news = db_sess.query(Health).filter(Health.id == id, Health.user == current_user).first()
+        news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
         if news:
             form.title.data = news.title
             form.content.data = news.content
@@ -76,7 +76,7 @@ def edit_news(id):
             abort(404)
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        news = db_sess.query(Health).filter(Health.id == id, Health.user == current_user).first()
+        news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
         if news:
             news.title = form.title.data
             news.content = form.content.data
@@ -92,9 +92,9 @@ def edit_news(id):
 def index():
     db_sess = db_session.create_session()
     if current_user.is_authenticated:
-        news = db_sess.query(Health).filter((Health.user == current_user) | (Health.is_private != True))
+        news = db_sess.query(News).filter((News.user == current_user) | (News.is_private != True))
     else:
-        news = db_sess.query(Health).filter(Health.is_private != True)
+        news = db_sess.query(News).filter(News.is_private != True)
     return render_template("index.html", news=news)
 
 
