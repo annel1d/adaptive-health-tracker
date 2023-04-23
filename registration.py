@@ -5,7 +5,7 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-DB_PATH = 'users-database.db'
+DB_PATH = 'db/users-database.db'
 
 
 @app.route('/register', methods=['GET', 'POST'])
