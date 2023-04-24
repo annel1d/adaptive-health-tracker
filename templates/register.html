@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+
+{% block content %}
 <head>
-    <title>Регистрация нового пользователя</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
-    <link rel="stylesheet" href="styles4register.css">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -54,32 +52,58 @@
         button[type="submit"]:hover {
             background-color: #45a049;
         }
+
     </style>
 </head>
-<body>
-<header>
-    <h1>Зарегистрируйтесь в системе HEALTH TRACKER</h1>
-</header>
-<main>
-    <form class="registration-form" method="POST" action="/register">
-        <div class="input-group">
-            <label for="username">Имя пользователя:</label>
-            <input type="text" id="username" name="username">
-        </div>
-        <div class="input-group">
-            <label for="email">Адрес электронной почты:</label>
-            <input type="text" id="email" name="email">
-        </div>
-        <div class="input-group">
-            <label for="password">Пароль:</label>
-            <input type="password" id="password" name="password">
-        </div>
-        <div class="input-group">
-            <label for="confirm_password">Подтверждение пароля:</label>
-            <input type="password" id="confirm_password" name="confirm_password">
-        </div>
-        <button type="submit">Зарегистрироваться</button>
-    </form>
-</main>
-</body>
-</html>
+<h1>Зарегистрируйтесь в системе HEALTH TRACKER</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(class="form-control", type="email") }}<br>
+        {% for error in form.email.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(class="form-control", type="password") }}<br>
+        {% for error in form.password.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.password_again.label }}<br>
+        {{ form.password_again(class="form-control", type="password") }}<br>
+        {% for error in form.password_again.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.name.label }}<br>
+        {{ form.name(class="form-control") }}<br>
+        {% for error in form.name.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.about.label }}<br>
+        {{ form.about(class="form-control") }}<br>
+        {% for error in form.about.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}

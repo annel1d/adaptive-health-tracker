@@ -1,16 +1,34 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
-from forms.news import HealthForm
-from forms.user import RegisterForm, LoginForm
+from data import db_session
 from data.news import News
 from data.users import User
-from data import db_session
+from forms.news import NewsForm
+from forms.user import RegisterForm, LoginForm
 
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+
+
+def send_email(subject, message, from_email, to_email, password):
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(message, 'plain'))
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(from_email, password)
+    text = msg.as_string()
+    server.sendmail(from_email, to_email, text)
+    server.quit()
 
 
 @login_manager.user_loader
@@ -34,7 +52,7 @@ def main():
 @app.route('/news', methods=['GET', 'POST'])
 @login_required
 def add_news():
-    form = HealthForm()
+    form = NewsForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         news = News()
@@ -44,8 +62,45 @@ def add_news():
         current_user.news.append(news)
         db_sess.merge(current_user)
         db_sess.commit()
+        if 'устал' in news.content.lower() or 'устал' in news.title.lower():
+            send_email('Новая заметка добавлена',
+                       'На сайте health-tracker была добавлена новая заметка. \n'
+                       'Вы очень устали, Вам сегодня стоит лечь пораньше и не утруждать себя занятиями по дому. \n\n\n\nВаш HEALTH TRACKER',
+                       'dima444obr@gmail.com',
+                       current_user.email,
+                       'rfncesluwulqsgnf')
+        elif 'живот' in news.content.lower() or 'живот' in news.title.lower():
+            send_email('Новая заметка добавлена',
+                       'На сайте health-tracker была добавлена новая заметка. \n'
+                       'Помогают снять боль в животе следующие медикаменты: \n'
+                       'спазмолитики: Дротаверин, Но-шпа, Тримедат, Необутин \n'
+                       'ферменты: Мезим форте, Креон, Фестал, Панкреатин, Эрмиталь. \n'
+                       'антациды: Алмагель, Алмагель А, Гевискон, Ренни, Маалокс, Фосфалюгель \n'
+                       'препараты висмута: Викаир, Викалин, Де-Нол \n'
+                       'Возможно, Вы просто переели или отравилсь, Вам сегодня стоит лечь пораньше и не утруждать себя занятиями по дому. \n\n\n\nВаш HEALTH TRACKER',
+                       'dima444obr@gmail.com',
+                       current_user.email,
+                       'rfncesluwulqsgnf')
+        elif 'голов' in news.content.lower() or 'голов' in news.title.lower():
+            send_email('Новая заметка добавлена',
+                       'На сайте health-tracker была добавлена новая заметка. \n'
+                       'При головных болях можно использовать разные препараты. \n'
+                       'К ним относятся «Анальгин», «Парацетамол», «Панадол», «Баралгин», «Темпалгин», «Седальгин» и др. \n'
+                       'С ярко выраженным эффектом. Это такие препараты, как «Аспирин», «Индометацин», «Диклофенак», «Ибупрофен», «Кетопрофен» и др. \n'
+                       'Возможно, Вы просто очень устали, Вам сегодня стоит лечь пораньше и не утруждать себя занятиями по дому. \n\n\n\nВаш HEALTH TRACKER',
+                       'dima444obr@gmail.com',
+                       current_user.email,
+                       'rfncesluwulqsgnf')
+        elif 'хорош' in news.content.lower() or 'хорош' in news.title.lower() or 'замечательно' in news.content.lower() \
+                or 'замечательно' in news.title.lower() or 'отлично' in news.content.lower() or 'отлично' in news.title.lower():
+            send_email('Новая заметка добавлена',
+                       'На сайте health-tracker была добавлена новая заметка. \n'
+                       'Просто замечательно, когда чувствуешь себя хорошо, не так ли?. \n\n\n\nВаш HEALTH TRACKER',
+                       'dima444obr@gmail.com',
+                       current_user.email,
+                       'rfncesluwulqsgnf')
         return redirect('/')
-    return render_template('health.html', title='Добавление самочувствия', form=form)
+    return render_template('news.html', title='Добавление новости', form=form)
 
 
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
@@ -64,7 +119,7 @@ def news_delete(id):
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_news(id):
-    form = HealthForm()
+    form = NewsForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
         news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
@@ -85,7 +140,7 @@ def edit_news(id):
             return redirect('/')
         else:
             abort(404)
-    return render_template('news.html', title='Редактирование записи', form=form)
+    return render_template('news.html', title='Редактирование новости', form=form)
 
 
 @app.route("/")
